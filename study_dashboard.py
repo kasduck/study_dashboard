@@ -21,10 +21,8 @@ import re
 import random
 from google.cloud import storage
 import re
-
-# Load environment variables
-load_dotenv()
-
+# Removed: from dotenv import load_dotenv
+# Removed: load_dotenv()
 # Initialize Firebase app only if not already initialized
 try:
     _ = firestore.client()
