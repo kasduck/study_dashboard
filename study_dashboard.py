@@ -28,6 +28,12 @@ try:
 except ValueError:
     firebase_json = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON")
     if firebase_json:
+        # Remove possible leading/trailing whitespace and triple quotes
+        firebase_json = firebase_json.strip()
+        # If it starts and ends with triple quotes, remove them
+        if firebase_json.startswith('"""') and firebase_json.endswith('"""'):
+            firebase_json = firebase_json[3:-3].strip()
+        # Now load as JSON
         cred = credentials.Certificate(json.loads(firebase_json))
         initialize_app(cred, {'projectId': os.getenv("FIREBASE_PROJECT_ID")})
     else:
