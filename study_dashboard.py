@@ -18,6 +18,7 @@ from dotenv import load_dotenv
 import os
 import random
 from google.cloud import storage
+import re
 
 # Load environment variables
 load_dotenv()
@@ -28,16 +29,25 @@ try:
 except ValueError:
     firebase_json = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON")
     if firebase_json:
-        # Remove possible leading/trailing whitespace and triple quotes
         firebase_json = firebase_json.strip()
-        # If it starts and ends with triple quotes, remove them
+        # Remove triple quotes if present
         if firebase_json.startswith('"""') and firebase_json.endswith('"""'):
             firebase_json = firebase_json[3:-3].strip()
-        # Now load as JSON
-        cred = credentials.Certificate(json.loads(firebase_json))
-        initialize_app(cred, {'projectId': os.getenv("FIREBASE_PROJECT_ID")})
+        # Remove single quotes if present
+        if firebase_json.startswith("'") and firebase_json.endswith("'"):
+            firebase_json = firebase_json[1:-1].strip()
+        # Remove extra newlines at start/end
+        firebase_json = re.sub(r'^\s+|\s+$', '', firebase_json)
+        # Now try to load as JSON
+        try:
+            cred = credentials.Certificate(json.loads(firebase_json))
+            initialize_app(cred, {'projectId': os.getenv("FIREBASE_PROJECT_ID")})
+        except Exception as e:
+            st.error(f"Could not parse FIREBASE_SERVICE_ACCOUNT_JSON: {e}")
+            st.stop()
     else:
-        raise ValueError("FIREBASE_SERVICE_ACCOUNT_JSON not set")
+        st.error("FIREBASE_SERVICE_ACCOUNT_JSON not set")
+        st.stop()
 
 # Get Firestore client
 db = firestore.client()
