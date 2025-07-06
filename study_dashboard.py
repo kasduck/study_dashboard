@@ -26,8 +26,12 @@ load_dotenv()
 try:
     _ = firestore.client()
 except ValueError:
-    cred = credentials.Certificate(os.getenv("FIREBASE_SERVICE_ACCOUNT_KEY"))
-    initialize_app(cred, {'projectId': os.getenv("FIREBASE_PROJECT_ID")})
+    firebase_json = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON")
+    if firebase_json:
+        cred = credentials.Certificate(json.loads(firebase_json))
+        initialize_app(cred, {'projectId': os.getenv("FIREBASE_PROJECT_ID")})
+    else:
+        raise ValueError("FIREBASE_SERVICE_ACCOUNT_JSON not set")
 
 # Get Firestore client
 db = firestore.client()
