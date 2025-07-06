@@ -14,8 +14,10 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from onesignal_sdk.client import Client as OneSignalClient
 from firebase_admin import credentials, initialize_app, auth, firestore
-from dotenv import load_dotenv
-import os
+import streamlit as st
+from firebase_admin import credentials, initialize_app, firestore
+import json
+import re
 import random
 from google.cloud import storage
 import re
@@ -27,26 +29,21 @@ load_dotenv()
 try:
     _ = firestore.client()
 except ValueError:
-    firebase_json = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON")
-    if firebase_json:
+    try:
+        firebase_json = st.secrets["firebase"]["FIREBASE_SERVICE_ACCOUNT_JSON"]
         firebase_json = firebase_json.strip()
-        # Remove triple quotes if present
         if firebase_json.startswith('"""') and firebase_json.endswith('"""'):
             firebase_json = firebase_json[3:-3].strip()
-        # Remove single quotes if present
         if firebase_json.startswith("'") and firebase_json.endswith("'"):
             firebase_json = firebase_json[1:-1].strip()
-        # Remove extra newlines at start/end
         firebase_json = re.sub(r'^\s+|\s+$', '', firebase_json)
-        # Now try to load as JSON
-        try:
-            cred = credentials.Certificate(json.loads(firebase_json))
-            initialize_app(cred, {'projectId': os.getenv("FIREBASE_PROJECT_ID")})
-        except Exception as e:
-            st.error(f"Could not parse FIREBASE_SERVICE_ACCOUNT_JSON: {e}")
-            st.stop()
-    else:
-        st.error("FIREBASE_SERVICE_ACCOUNT_JSON not set")
+        cred = credentials.Certificate(json.loads(firebase_json))
+        initialize_app(cred, {'projectId': st.secrets["firebase"]["FIREBASE_PROJECT_ID"]})
+    except KeyError as e:
+        st.error(f"Missing secret: {e}. Check your secrets.toml or Streamlit Cloud secrets.")
+        st.stop()
+    except Exception as e:
+        st.error(f"Could not parse FIREBASE_SERVICE_ACCOUNT_JSON: {e}")
         st.stop()
 
 # Get Firestore client
