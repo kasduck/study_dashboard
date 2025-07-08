@@ -316,7 +316,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Initialize session state
-if 'initialized' not in=st.session_state:
+if 'initialized' not in st.session_state:
     st.session_state.initialized = True
     st.session_state.curriculum_data = None
     st.session_state.curriculum_file = None
@@ -797,7 +797,6 @@ def render_curriculum_checklist():
                             if is_completed:
                                 st.markdown("✅")
                             elif is_unlocked:
-環
                                 st.markdown("⏳")
                             else:
                                 st.markdown('<div class="tooltip">🔒<span class="tooltiptext">Locked</span></div>', unsafe_allow_html=True)
@@ -904,7 +903,7 @@ def render_study_schedule():
         start_time = st.time_input("Preferred Start Time", value=datetime.strptime("09:00", "%H:%M").time(), help="Choose when to start studying.")
     
     with col2:
-        study_days = st.mult.select(
+        study_days = st.multiselect(
             "Available Days",
             ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
             default=["Monday", "Saturday", "Sunday"],
@@ -1088,7 +1087,7 @@ def render_settings():
     
     if st.session_state.authenticated:
         st.subheader("👤 User Preferences")
-        col col1, col2 = st.columns(2)
+        col1, col2 = st.columns(2)
         
         with col1:
             st.session_state.user_email = st.text_input("📧 Email", value=st.session_state.user_email, disabled=True)
