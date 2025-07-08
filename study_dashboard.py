@@ -14,16 +14,15 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from onesignal_sdk.client import Client as OneSignalClient
 from firebase_admin import credentials, initialize_app, auth, firestore
-import re
 import random
+import re
 
-# Initialize Firebase app only if not already initialized
+# Initialize Firebase
 try:
     _ = firestore.client()
 except ValueError:
     try:
-        firebase_json = st.secrets["firebase"]["FIREBASE_SERVICE_ACCOUNT_JSON"]
-        firebase_json = firebase_json.strip()
+        firebase_json = st.secrets["firebase"]["FIREBASE_SERVICE_ACCOUNT_JSON"].strip()
         if firebase_json.startswith('"""') and firebase_json.endswith('"""'):
             firebase_json = firebase_json[3:-3].strip()
         if firebase_json.startswith("'") and firebase_json.endswith("'"):
@@ -38,7 +37,6 @@ except ValueError:
         st.error(f"Could not parse FIREBASE_SERVICE_ACCOUNT_JSON: {e}")
         st.stop()
 
-# Get Firestore client
 db = firestore.client()
 
 # Page Configuration
@@ -49,97 +47,146 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for improved UI/UX
+# Enhanced CSS with modern, clean, and animated design
 st.markdown("""
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f5f7fa;
+    }
+
+    .sidebar .sidebar-content {
+        background-color: #ffffff;
+        border-right: 1px solid #e0e4e8;
+        padding: 1rem;
+    }
+
+    .main-container {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin: 1rem;
+    }
+
     .main-header {
-        background: linear-gradient(135deg, #4facfe 0%, #3b8aff 100%);
+        background: linear-gradient(135deg, #4a90e2 0%, #9013fe 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        text-align: center;
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    .stats-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 0.5rem;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    .progress-card {
+        background: linear-gradient(135deg, #36d1dc 0%, #5b86e5 100%);
         color: white;
         padding: 1.5rem;
-        border-radius: 8px;
-        margin-bottom: 1.5rem;
-        text-align: center;
-    }
-    .main-header h1 {
-        font-size: 2.2rem;
-        font-weight: 600;
-    }
-    .main-header p {
-        font-size: 1.1rem;
-        opacity: 0.9;
-    }
-    .stats-card {
-        background: #4facfe;
-        color: white;
-        padding: 1rem;
-        border-radius: 8px;
+        border-radius: 12px;
         margin: 0.5rem;
-        text-align: center;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
     }
-    .stats-card h3 {
-        font-size: 1.2rem;
+
+    .progress-card:hover {
+        transform: translateY(-5px);
     }
-    .stats-card h2 {
-        font-size: 1.8rem;
-    }
-    .progress-card {
-        background: #43e97b;
-        color: white;
-        padding: 1rem;
-        border-radius: 8px;
-        margin: 0.5rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-    }
+
     .badge-card {
-        background: #f093fb;
+        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
         color: white;
         padding: 1rem;
-        border-radius: 8px;
+        border-radius: 12px;
         margin: 0.5rem;
         text-align: center;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-        position: relative;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
     }
+
+    .badge-card:hover {
+        transform: scale(1.05);
+    }
+
     .locked-item {
-        opacity: 0.5;
-        filter: grayscale(100%);
-        color: #000000;
-        position: relative;
+        opacity: 0.7;
+        background-color: #f1f3f5;
+        border-radius: 8px;
+        padding: 0.5rem;
+        color: #333;
     }
+
     .completed-item {
-        background-color: #e8f5e8;
+        background-color: #e6f4ea;
         border-left: 4px solid #28a745;
-        color: #000000;
+        border-radius: 8px;
+        padding: 0.5rem;
+        color: #333;
+        animation: slideIn 0.5s ease;
     }
+
     .next-item {
-        background-color: #fff3cd;
-        border-left: 4px solid #ffc107;
-        color: #000000;
+        background-color: #fff4d6;
+        border-left: 4px solid #ffca28;
+        border-radius: 8px;
+        padding: 0.5rem;
+        color: #333;
         animation: pulse 2s infinite;
     }
+
     @keyframes pulse {
         0% { transform: scale(1); }
         50% { transform: scale(1.02); }
         100% { transform: scale(1); }
     }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+        from { transform: translateX(-20px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
     .motivational-quote {
-        background: #4facfe;
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
         color: white;
-        padding: 1rem;
-        border-radius: 8px;
+        padding: 1.5rem;
+        border-radius: 12px;
         text-align: center;
         font-style: italic;
         margin: 1rem 0;
+        animation: fadeIn 0.5s ease-in;
     }
+
     .tooltip {
         position: relative;
         display: inline-block;
         cursor: help;
     }
-    .tooltip .tooltip-text {
+
+    .tooltip .tooltiptext {
         visibility: hidden;
-        width: 200px;
+        width: 120px;
         background-color: #333;
         color: #fff;
         text-align: center;
@@ -149,61 +196,86 @@ st.markdown("""
         z-index: 1;
         bottom: 125%;
         left: 50%;
-        margin-left: -100px;
+        margin-left: -60px;
         opacity: 0;
         transition: opacity 0.3s;
     }
-    .tooltip:hover .tooltip-text {
+
+    .tooltip:hover .tooltiptext {
         visibility: visible;
         opacity: 1;
     }
-    .badge-card .tooltip-text {
-        width: 150px;
-        margin-left: -75px;
-    }
+
     .message-box {
         padding: 0.5rem;
-        margin-top: 0.2rem;
-        border-radius: 5px;
+        margin-top: 0.5rem;
+        border-radius: 8px;
         text-align: center;
-        background-color: #e8f5e8;
-        color: #000000;
+        background-color: #e6f4ea;
+        color: #333;
         border: 2px solid #28a745;
-        animation: fadeOut 5s forwards;
+        animation: slideIn 0.5s ease;
     }
+
     .message-box.warning {
-        background-color: #fff3cd;
-        border: 2px solid #ffc107;
+        background-color: #fff4d6;
+        border: 2px solid #ffca28;
     }
-    @keyframes fadeOut {
-        0% { opacity: 1; }
-        80% { opacity: 1; }
-        100% { opacity: 0; display: none; }
+
+    .completion-message {
+        color: #333;
+        font-size: 1rem;
+        margin: 0.5rem 0;
+        background: none;
+        border: none;
+        padding: 0;
+        animation: fadeIn 0.5s ease;
     }
+
     .stButton>button {
-        aria-label: "Button action";
-        transition: background-color 0.3s ease;
+        background: linear-gradient(135deg, #4a90e2 0%, #9013fe 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        transition: background 0.3s ease, transform 0.2s ease;
     }
+
     .stButton>button:hover {
-        background-color: #3b8aff;
+        background: linear-gradient(135deg, #357abd 0%, #7b0fd9 100%);
+        transform: translateY(-2px);
     }
-    .stCheckbox>label>input {
-        outline: none;
-    }
-    .stCheckbox>label>input:focus {
-        outline: 2px solid #4facfe;
-    }
-    .stRadio > div > label > div {
+
+    .stTextInput>div>input, .stTimeInput>div>input, .stSelectbox>div>select, .stMultiselect>div>select {
+        border-radius: 8px;
+        border: 1px solid #e0e4e8;
         padding: 0.5rem;
-        border-radius: 5px;
+        transition: border-color 0.3s ease;
     }
-    .stRadio > div > label > input:checked + div {
-        background-color: #e8f5e8;
-        font-weight: 600;
+
+    .stTextInput>div>input:focus, .stTimeInput>div>input:focus, .stSelectbox>div>select:focus, .stMultiselect>div>select:focus {
+        border-color: #4a90e2;
+        box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
     }
-    .stSidebar {
-        max-height: 80vh;
-        overflow-y: auto;
+
+    .stExpander {
+        border: 1px solid #e0e4e8;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        background-color: #ffffff;
+    }
+
+    .stPlotlyChart {
+        background-color: #ffffff;
+        border-radius: 8px;
+        padding: 1rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .stDataFrame {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -219,7 +291,6 @@ if 'initialized' not in st.session_state:
     st.session_state.badges = []
     st.session_state.last_study_date = None
     st.session_state.dark_mode = False
-    st.session_state.high_contrast = False
     st.session_state.notifications_enabled = True
     st.session_state.user_email = ""
     st.session_state.schedule_data = []
@@ -254,12 +325,9 @@ MOTIVATIONAL_QUOTES = [
 ]
 
 def get_motivational_quote():
-    """Return a deterministic motivational quote based on the current day"""
-    day_index = datetime.now().timetuple().tm_yday % len(MOTIVATIONAL_QUOTES)
-    return MOTIVATIONAL_QUOTES[day_index]
+    return random.choice(MOTIVATIONAL_QUOTES)
 
 def load_curriculum_data():
-    """Load and parse curriculum data from uploaded CSV file or default"""
     if 'curriculum_file' not in st.session_state or st.session_state.curriculum_file is None:
         st.warning("Please upload a curriculum CSV file to populate the checklist.")
         return {}
@@ -332,16 +400,18 @@ def sync_user_data(user_id):
             data = doc.to_dict()
             key = f"{data['module']}_{data['chapter']}_{data['subtopic']}"
             st.session_state.progress_data[key] = data['completed']
+        
         badges_ref = db.collection('badges').where(
             filter=firestore.FieldFilter('user_id', '==', user_id)
         )
         docs = badges_ref.stream()
         st.session_state.badges = [doc.to_dict()['badge_name'] for doc in docs]
+        
         sessions_ref = db.collection('study_sessions').where(
             filter=firestore.FieldFilter('user_id', '==', user_id)
         )
         docs = sessions_ref.stream()
-        st.session_state.study_hours = sum(doc.to_dict().get('hours', 0) for doc in docs)
+        st.session_state.study_hours = sum(doc.to_dict().get('Hours', 0) for doc in docs)
         st.session_state.streak_counter = len(list(docs)) if docs else 0
     except Exception as e:
         st.error(f"Error syncing data from Firestore: {str(e)}")
@@ -424,28 +494,38 @@ def send_push_notification(message):
 def calculate_progress_stats(progress_data, curriculum_data):
     if not curriculum_data:
         return 0, 0, 0, 0
+    
     total_subtopics = 0
     completed_subtopics = 0
+    
     for module, chapters in curriculum_data.items():
         for chapter, content in chapters.items():
             total_subtopics += len(content.get('subtopics', []))
             for subtopic in content.get('subtopics', []):
                 if progress_data.get(f"{module}_{chapter}_{subtopic}", False):
                     completed_subtopics += 1
+    
     completion_percentage = (completed_subtopics / total_subtopics * 100) if total_subtopics > 0 else 0
+    
     return completion_percentage, completed_subtopics, total_subtopics, len(curriculum_data)
 
 def render_progress_dashboard():
     if not st.session_state.authenticated:
         st.warning("Please sign in to access the dashboard.")
         return
-    st.markdown('<div class="main-header"><h1>📚 Study Progress Dashboard</h1><p>Track your learning journey with gamification!</p></div>', unsafe_allow_html=True)
+    
+    st.markdown('<div class="main-container">', unsafe_allow_html=True)
+    st.markdown('<div class="main-header"><h1>📚 Study Progress Dashboard</h1><p>Your learning journey, gamified and visualized!</p></div>', unsafe_allow_html=True)
+    
     if st.session_state.curriculum_data is None:
         st.session_state.curriculum_data = load_curriculum_data()
+    
     completion_percentage, completed_subtopics, total_subtopics, total_modules = calculate_progress_stats(
         st.session_state.progress_data, st.session_state.curriculum_data
     )
+    
     col1, col2, col3, col4 = st.columns(4)
+    
     with col1:
         st.markdown(f"""
         <div class="stats-card">
@@ -454,6 +534,7 @@ def render_progress_dashboard():
             <p>Overall Completion</p>
         </div>
         """, unsafe_allow_html=True)
+    
     with col2:
         st.markdown(f"""
         <div class="stats-card">
@@ -462,6 +543,7 @@ def render_progress_dashboard():
             <p>Subtopics Done</p>
         </div>
         """, unsafe_allow_html=True)
+    
     with col3:
         st.markdown(f"""
         <div class="stats-card">
@@ -470,6 +552,7 @@ def render_progress_dashboard():
             <p>Hours Logged</p>
         </div>
         """, unsafe_allow_html=True)
+    
     with col4:
         st.markdown(f"""
         <div class="stats-card">
@@ -478,56 +561,60 @@ def render_progress_dashboard():
             <p>Days in a Row</p>
         </div>
         """, unsafe_allow_html=True)
+    
     st.markdown(f'<div class="motivational-quote">💡 {get_motivational_quote()}</div>', unsafe_allow_html=True)
-    if st.button("🔄 New Quote", key="refresh_quote"):
-        MOTIVATIONAL_QUOTES.append(MOTIVATIONAL_QUOTES.pop(0))
-        st.rerun()
+    
     col1, col2 = st.columns(2)
+    
     with col1:
         module_completion = []
         module_names = []
+        
         for module, chapters in st.session_state.curriculum_data.items():
             total_module_subtopics = 0
             completed_module_subtopics = 0
+            
             for chapter, content in chapters.items():
                 total_module_subtopics += len(content.get('subtopics', []))
                 for subtopic in content.get('subtopics', []):
                     if st.session_state.progress_data.get(f"{module}_{chapter}_{subtopic}", False):
                         completed_module_subtopics += 1
+            
             completion_rate = (completed_module_subtopics / total_module_subtopics * 100) if total_module_subtopics > 0 else 0
             module_completion.append(completion_rate)
             module_names.append(module.split(":")[0])
+        
         fig_pie = px.pie(
             values=module_completion,
             names=module_names,
             title="Module Completion Distribution",
-            color_discrete_sequence=['#4facfe', '#00f2fe', '#43e97b', '#f093fb', '#f5576c']
+            color_discrete_sequence=px.colors.qualitative.Pastel
         )
-        fig_pie.update_traces(hovertemplate="%{label}: %{value:.1f}%")
         fig_pie.update_layout(
-            template="plotly_white",
-            font=dict(size=14),
-            margin=dict(l=20, r=20, t=50, b=20),
-            transition_duration=500
+            margin=dict(t=40, b=40, l=40, r=40),
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)'
         )
         st.plotly_chart(fig_pie, use_container_width=True)
+    
     with col2:
         weeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4']
         hours = [15, 22, 18, 25]
+        
         fig_bar = px.bar(
             x=weeks,
             y=hours,
             title="Weekly Study Hours",
             color=hours,
-            color_continuous_scale="Blues"
+            color_continuous_scale="Teal"
         )
         fig_bar.update_layout(
-            template="plotly_white",
-            font=dict(size=14),
-            margin=dict(l=20, r=20, t=50, b=20),
-            transition_duration=500
+            margin=dict(t=40, b=40, l=40, r=40),
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)'
         )
         st.plotly_chart(fig_bar, use_container_width=True)
+    
     st.subheader("📈 Completed Subtopics by Module")
     try:
         progress_ref = db.collection('progress').where(
@@ -541,6 +628,7 @@ def render_progress_dashboard():
         for entry in progress_data:
             module = entry['module'].split(":")[0]
             module_counts[module] = module_counts.get(module, 0) + 1
+        
         if module_counts:
             modules = list(module_counts.keys())
             counts = list(module_counts.values())
@@ -548,7 +636,7 @@ def render_progress_dashboard():
                 go.Bar(
                     x=modules,
                     y=counts,
-                    marker_color='#4facfe',
+                    marker_color='#36d1dc',
                     text=counts,
                     textposition='auto'
                 )
@@ -558,28 +646,31 @@ def render_progress_dashboard():
                 xaxis_title="Module",
                 yaxis_title="Completed Subtopics",
                 template="plotly_white",
-                font=dict(size=14),
-                margin=dict(l=20, r=20, t=50, b=20),
-                transition_duration=500
+                margin=dict(t=40, b=40, l=40, r=40)
             )
             st.plotly_chart(fig_subtopics, use_container_width=True)
         else:
             st.info("No completed subtopics yet. Mark some in the Checklist to see the chart!")
     except Exception as e:
         st.error(f"Error fetching progress from Firestore: {str(e)}")
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
 def render_curriculum_checklist():
-    st.header("📋 Curriculum Checklist")
     if not st.session_state.authenticated:
         st.warning("Please sign in to access the checklist.")
         return
+    
+    st.markdown('<div class="main-container">', unsafe_allow_html=True)
+    st.header("📋 Curriculum Checklist")
+    
     if st.session_state.curriculum_data is None or st.session_state.curriculum_file is None:
         file_obj = download_curriculum_from_firestore(st.session_state.user_id)
         if file_obj:
             st.session_state.curriculum_file = file_obj
             st.session_state.curriculum_data = load_curriculum_data()
         if st.session_state.curriculum_data is None or st.session_state.curriculum_file is None:
-            uploaded_file = st.file_uploader("Upload Curriculum CSV", type=["csv"], key="curriculum_upload")
+            uploaded_file = st.file_uploader("Upload Curriculum CSV", type=["csv"], help="Upload a CSV file containing your curriculum data.")
             if uploaded_file is not None:
                 upload_curriculum_to_firestore(st.session_state.user_id, uploaded_file)
                 file_obj = download_curriculum_from_firestore(st.session_state.user_id)
@@ -590,26 +681,26 @@ def render_curriculum_checklist():
             else:
                 st.warning("Please upload a curriculum CSV file to populate the checklist.")
                 return
+    
     if 'completion_messages' not in st.session_state:
         st.session_state.completion_messages = {}
-    with st.expander("🔍 Search Subtopics", expanded=False):
-        search_term = st.text_input("", placeholder="Type to search...", key="search_subtopics")
+    
+    search_term = st.text_input("🔍 Search subtopics...", placeholder="Search for subtopics...", key="search_subtopics")
+    
     for module, chapters in st.session_state.curriculum_data.items():
-        total_subtopics = sum(len(content.get('subtopics', [])) for chapter, content in chapters.items())
-        completed_subtopics = sum(1 for chapter, content in chapters.items() for subtopic in content.get('subtopics', []) if st.session_state.progress_data.get(f"{module}_{chapter}_{subtopic}", False))
-        module_progress = (completed_subtopics / total_subtopics * 100) if total_subtopics > 0 else 0
-        with st.expander(f"📚 {module} ({module_progress:.1f}% Complete)", expanded=True):
+        with st.expander(f"📚 {module}", expanded=True):
             for chapter, content in chapters.items():
-                chapter_subtopics = len(content.get('subtopics', []))
-                chapter_completed = sum(1 for subtopic in content.get('subtopics', []) if st.session_state.progress_data.get(f"{module}_{chapter}_{subtopic}", False))
-                chapter_progress = (chapter_completed / chapter_subtopics * 100) if chapter_subtopics > 0 else 0
-                st.subheader(f"📖 {chapter} ({chapter_progress:.1f}% Complete)")
+                st.subheader(f"📖 {chapter}")
+                
                 for i, subtopic in enumerate(content.get('subtopics', [])):
                     if search_term.lower() in subtopic.lower() or not search_term:
                         key = f"{module}_{chapter}_{subtopic}"
-                        is_unlocked = i == 0 or (i > 0 and st.session_state.progress_data.get(f"{module}_{chapter}_{content.get('subtopics', [])[i-1]}", False))
+                        is_unlocked = i == 0 or (i > 0 and st.session_state.progress_data.get(
+                            f"{module}_{chapter}_{content.get('subtopics', [])[i-1]}", False))
                         is_completed = st.session_state.progress_data.get(key, False)
+                        
                         col1, col2, col3 = st.columns([1, 8, 1])
+                        
                         with col1:
                             if is_unlocked:
                                 new_value = st.checkbox(" ", key=f"checkbox_{key}", value=is_completed)
@@ -625,40 +716,46 @@ def render_curriculum_checklist():
                                             st.session_state.completion_messages[key] = f"Subtopic '{subtopic}' marked incomplete."
                                         st.rerun()
                             else:
-                                st.markdown("🔒")
+                                st.markdown('<div class="tooltip">🔒<span class="tooltiptext">Complete previous subtopic</span></div>', unsafe_allow_html=True)
+                        
                         with col2:
                             if is_completed:
                                 st.markdown(f'<div class="completed-item">✅ {subtopic}</div>', unsafe_allow_html=True)
                             elif is_unlocked:
                                 st.markdown(f'<div class="next-item">⏳ {subtopic}</div>', unsafe_allow_html=True)
                             else:
-                                st.markdown(f'<div class="locked-item tooltip">🔒 {subtopic}<span class="tooltip-text">Complete the previous subtopic to unlock</span></div>', unsafe_allow_html=True)
+                                st.markdown(f'<div class="locked-item">🔒 {subtopic}</div>', unsafe_allow_html=True)
                             if key in st.session_state.completion_messages:
                                 st.markdown(
-                                    f'<div class="message-box" style="width: {len(subtopic) * 0.6}em;">'
-                                    f'{st.session_state.completion_messages[key]}'
-                                    f'<button onclick="this.parentElement.style.display=\'none\'" style="float:right; border:none; background:none; cursor:pointer;">✖</button></div>',
+                                    f'<div class="message-box">{st.session_state.completion_messages[key]}</div>',
                                     unsafe_allow_html=True
                                 )
+                        
                         with col3:
                             if is_completed:
                                 st.markdown("✅")
                             elif is_unlocked:
                                 st.markdown("⏳")
                             else:
-                                st.markdown("🔒")
+                                st.markdown('<div class="tooltip">🔒<span class="tooltiptext">Locked</span></div>', unsafe_allow_html=True)
+                
                 if 'project' in content:
-                    if st.button(f"📋 View Project Details", key=f"project_{module}_{chapter}", help="View project details for this chapter"):
+                    if st.button(f"📋 View Project Details", key=f"project_{module}_{chapter}"):
                         st.info(f"**Project:** {content['project']}")
+    
     st.session_state.completion_messages = {}
+    st.markdown('</div>', unsafe_allow_html=True)
 
 def check_and_award_badges():
     if not st.session_state.authenticated:
         return
+    
     completion_percentage, completed_subtopics, total_subtopics, total_modules = calculate_progress_stats(
         st.session_state.progress_data, st.session_state.curriculum_data
     )
+    
     badges_to_award = []
+    
     if completed_subtopics >= 5 and "First Steps" not in st.session_state.badges:
         badges_to_award.append("First Steps")
     if completed_subtopics >= 10 and "Getting Started" not in st.session_state.badges:
@@ -671,6 +768,7 @@ def check_and_award_badges():
         badges_to_award.append("Streak Star")
     if st.session_state.study_hours >= 50 and "Study Master" not in st.session_state.badges:
         badges_to_award.append("Study Master")
+    
     for badge in badges_to_award:
         st.session_state.badges.append(badge)
         save_badge_to_supabase(st.session_state.user_id, badge)
@@ -688,19 +786,15 @@ def render_trophy_case():
     if not st.session_state.authenticated:
         st.warning("Please sign in to view your trophy case.")
         return
+    
+    st.markdown('<div class="main-container">', unsafe_allow_html=True)
     st.header("🏆 Trophy Case")
+    
     if not st.session_state.badges:
         st.info("Complete subtopics to earn badges!")
         return
-    badge_descriptions = {
-        "First Steps": "Completed 5 subtopics",
-        "Getting Started": "Completed 10 subtopics",
-        "Quarter Master": "Reached 25% completion",
-        "Halfway Hero": "Reached 50% completion",
-        "Streak Star": "Maintained a 5-day streak",
-        "Study Master": "Logged 50 study hours",
-        "Module Master": "Completed an entire module"
-    }
+    
+    cols = st.columns(4)
     badge_icons = {
         "First Steps": "🚀",
         "Getting Started": "⭐",
@@ -710,37 +804,24 @@ def render_trophy_case():
         "Study Master": "📚",
         "Module Master": "🎓"
     }
-    sort_by = st.selectbox("Sort Badges By", ["Name", "Date Earned"], key="sort_badges")
-    sorted_badges = st.session_state.badges
-    if sort_by == "Date Earned":
-        badges_ref = db.collection('badges').where(
-            filter=firestore.FieldFilter('user_id', '==', st.session_state.user_id)
-        )
-        docs = badges_ref.stream()
-        badge_data = [(doc.to_dict()['badge_name'], doc.to_dict().get('earned_at', firestore.SERVER_TIMESTAMP)) for doc in docs]
-        sorted_badges = [badge for badge, _ in sorted(badge_data, key=lambda x: x[1], reverse=True)]
-    else:
-        sorted_badges = sorted(st.session_state.badges)
-    cols = st.columns(4)
-    for i, badge in enumerate(sorted_badges):
+    
+    for i, badge in enumerate(st.session_state.badges):
         col = cols[i % 4]
         with col:
             icon = badge_icons.get(badge, "🏆")
-            st.markdown(
-                f"""
-                <div class="badge-card tooltip">
-                    <h2>{icon}</h2>
-                    <h4>{badge}</h4>
-                    <span class="tooltip-text">{badge_descriptions.get(badge, "Earned for outstanding progress!")}</span>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+            st.markdown(f"""
+            <div class="badge-card">
+                <h2>{icon}</h2>
+                <h4>{badge}</h4>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
-@st.dialog("Confirm Reset")
+@st.dialog("Confirm Reset", width="small")
 def reset_dialog():
     st.write("Are you sure you want to reset all progress?")
-    if st.button("Yes, Reset All Progress", key="confirm_reset"):
+    if st.button("Yes, Reset All Progress"):
         reset_progress_data()
         st.rerun()
 
@@ -748,51 +829,52 @@ def render_study_schedule():
     if not st.session_state.authenticated:
         st.warning("Please sign in to access the schedule.")
         return
+    
+    st.markdown('<div class="main-container">', unsafe_allow_html=True)
     st.header("📅 Study Schedule")
+    
     st.subheader("⚙️ Schedule Settings")
     col1, col2 = st.columns(2)
+    
     with col1:
-        daily_hours = st.slider("Daily Study Hours", 2, 8, 4, key="daily_hours")
-        start_time = st.time_input("Preferred Start Time", value=datetime.strptime("09:00", "%H:%M").time(), key="start_time")
+        daily_hours = st.slider("Daily Study Hours", 2, 8, 4, help="Set your daily study duration.")
+        start_time = st.time_input("Preferred Start Time", value=datetime.strptime("09:00", "%H:%M").time(), help="Choose when to start studying.")
+    
     with col2:
         study_days = st.multiselect(
             "Available Days",
             ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
             default=["Monday", "Saturday", "Sunday"],
-            key="study_days"
+            help="Select days you're available to study."
         )
-    if st.button("🗓️ Generate Schedule", key="generate_schedule", help="Generate a new study schedule"):
+    
+    if st.button("🗓️ Generate Schedule"):
         generate_study_schedule(daily_hours, start_time, study_days)
+    
     if st.session_state.schedule_data:
         st.subheader("📋 Current Schedule")
-        sort_by = st.selectbox("Sort Schedule By", ["Date", "Urgent", "Module"], key="sort_schedule")
         schedule_df = pd.DataFrame(st.session_state.schedule_data)
-        if sort_by == "Urgent":
-            schedule_df = schedule_df.sort_values(by="Urgent", ascending=False)
-        elif sort_by == "Module":
-            schedule_df = schedule_df.sort_values(by="Module")
-        else:
-            schedule_df = schedule_df.sort_values(by="Date")
-        def highlight_urgent(row):
-            return ['background-color: #fff3cd' if row['Urgent'] else '' for _ in row]
-        st.dataframe(schedule_df.style.apply(highlight_urgent, axis=1), use_container_width=True)
+        st.dataframe(schedule_df, use_container_width=True)
+        
         weekly_hours = st.session_state.study_hours % 7
         target_hours = 25
         fig_goal = go.Figure(data=[go.Indicator(
             value=weekly_hours,
             mode="gauge+number",
             title={'text': "Weekly Hours Progress"},
-            gauge={'axis': {'range': [0, 30]}}
+            gauge={'axis': {'range': [0, 30]}, 'bar': {'color': "#36d1dc"}}
         )])
         fig_goal.update_layout(
-            template="plotly_white",
-            font=dict(size=14),
-            margin=dict(l=20, r=20, t=50, b=20),
-            transition_duration=500
+            margin=dict(t=40, b=40, l=40, r=40),
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)'
         )
         st.plotly_chart(fig_goal, use_container_width=True)
-        if st.button("📄 Export to Calendar (.ics)", key="export_calendar", help="Export schedule to calendar file"):
+        
+        if st.button("📄 Export to Calendar (.ics)"):
             export_to_calendar()
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
 def generate_study_schedule(daily_hours, start_time, study_days):
     st.session_state.schedule_data = []
@@ -811,11 +893,14 @@ def generate_study_schedule(daily_hours, start_time, study_days):
                         'estimated_hours': 2,
                         'deadline': content.get('deadline', '9999-12-31')
                     })
+    
     uncompleted_subtopics.sort(key=lambda x: x['deadline'])
+    
     current_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     end_date = current_date + timedelta(days=14)
     scheduled_hours = 0
     target_weekly_hours = 25
+    
     while current_date <= end_date and uncompleted_subtopics and scheduled_hours < target_weekly_hours:
         day_name = current_date.strftime("%A")
         if day_name in study_days:
@@ -839,12 +924,14 @@ def generate_study_schedule(daily_hours, start_time, study_days):
                     st.session_state.schedule_data.append(schedule_entry)
                     scheduled_hours += session_duration
         current_date += timedelta(days=1)
+    
     st.success(f"✅ Schedule generated for {len(st.session_state.schedule_data)} study sessions! (Target: {target_weekly_hours} hours/week)")
 
 def export_to_calendar():
     cal = Calendar()
     cal.add('prodid', '-//Study Dashboard//mxm.dk//')
     cal.add('version', '2.0')
+    
     for session in st.session_state.schedule_data:
         event = Event()
         event.add('summary', f"Study: {session['Subtopic']} {'(Urgent)' if session['Urgent'] else ''}")
@@ -852,6 +939,7 @@ def export_to_calendar():
         event.add('dtend', datetime.strptime(f"{session['Date']} {session['Time']}", "%Y-%m-%d %H:%M") + timedelta(hours=int(session['Duration'].replace('h', ''))))
         event.add('description', f"Module: {session['Module']}\nChapter: {session['Chapter']}\nUrgent: {session['Urgent']}")
         cal.add_component(event)
+    
     ics_content = cal.to_ical().decode('utf-8')
     st.download_button(
         label="📥 Download Calendar File",
@@ -864,6 +952,7 @@ def export_supabase_data():
     if not st.session_state.authenticated:
         st.warning("Please sign in to export data.")
         return
+    
     try:
         progress_ref = db.collection('progress').where(
             filter=firestore.FieldFilter('user_id', '==', st.session_state.user_id)
@@ -872,6 +961,7 @@ def export_supabase_data():
         progress_data = [doc.to_dict() for doc in docs]
         progress_df = pd.DataFrame(progress_data)
         progress_csv = progress_df.to_csv(index=False)
+        
         badges_ref = db.collection('badges').where(
             filter=firestore.FieldFilter('user_id', '==', st.session_state.user_id)
         )
@@ -879,80 +969,78 @@ def export_supabase_data():
         badges_data = [doc.to_dict() for doc in docs]
         badges_df = pd.DataFrame(badges_data)
         badges_csv = badges_df.to_csv(index=False)
+        
         st.download_button(
             label="Download Progress CSV",
             data=progress_csv,
             file_name="firestore_progress.csv",
-            mime="text/csv",
-            key="download_progress"
+            mime="text/csv"
         )
         st.download_button(
             label="Download Badges CSV",
             data=badges_csv,
             file_name="firestore_badges.csv",
-            mime="text/csv",
-            key="download_badges"
+            mime="text/csv"
         )
     except Exception as e:
         st.error(f"Error exporting Firestore data: {str(e)}")
 
 def render_settings():
+    st.markdown('<div class="main-container">', unsafe_allow_html=True)
     st.header("⚙️ Settings")
-    with st.expander("👤 Authentication", expanded=not st.session_state.authenticated):
-        if not st.session_state.authenticated:
-            email = st.text_input("📧 Email", key="auth_email", help="Enter your email address")
-            password = st.text_input("🔒 Password", type="password", key="auth_password", help="Enter your password")
+    
+    if not st.session_state.authenticated:
+        st.subheader("👤 Sign In / Sign Up")
+        with st.container():
+            email = st.text_input("📧 Email", placeholder="Enter your email")
+            password = st.text_input("🔒 Password", type="password", placeholder="Enter your password")
             col1, col2 = st.columns(2)
             with col1:
-                if st.button("Sign In", key="sign_in", help="Sign in to your account"):
+                if st.button("Sign In"):
                     sign_in(email, password)
             with col2:
-                if st.button("Sign Up", key="sign_up", help="Create a new account"):
+                if st.button("Sign Up"):
                     sign_up(email, password)
-        else:
-            st.write(f"Logged in as: {st.session_state.user_email}")
-            if st.button("Sign Out", key="sign_out", help="Sign out of your account"):
-                sign_out()
+    else:
+        st.subheader("👤 User")
+        st.write(f"Logged in as: {st.session_state.user_email}")
+        if st.button("Sign Out"):
+            sign_out()
+    
     if st.session_state.authenticated:
-        with st.expander("👤 User Preferences", expanded=True):
-            col1, col2 = st.columns(2)
-            with col1:
-                st.session_state.user_email = st.text_input("📧 Email", value=st.session_state.user_email, disabled=True, key="settings_email")
-                st.session_state.dark_mode = st.checkbox("🌙 Dark Mode", value=st.session_state.dark_mode, key="dark_mode", help="Enable dark mode for better visibility in low light")
-                st.session_state.high_contrast = st.checkbox("👓 High Contrast Mode", value=st.session_state.get('high_contrast', False), key="high_contrast", help="Enable high contrast for better accessibility")
-            with col2:
-                st.session_state.notifications_enabled = st.checkbox("🔔 Enable Notifications", value=st.session_state.notifications_enabled, key="notifications", help="Receive email and push notifications for progress and badges")
-                notification_frequency = st.selectbox("📅 Notification Frequency", ["Daily", "Weekly", "Monthly"], key="notification_freq", help="Choose how often to receive notifications")
-        if st.session_state.get('high_contrast', False):
-            st.markdown("""
-            <style>
-                .main-header, .stats-card, .progress-card, .badge-card, .motivational-quote {
-                    background: #000000 !important;
-                    color: #FFFFFF !important;
-                    border: 2px solid #FFFFFF;
-                }
-                .completed-item, .next-item, .locked-item {
-                    color: #000000 !important;
-                    background: #FFFFFF !important;
-                }
-            </style>
-            """, unsafe_allow_html=True)
-        with st.expander("💾 Data Management"):
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                if st.button("📤 Export Progress", key="export_progress", help="Export progress data as CSV"):
-                    export_progress_data()
-            with col2:
-                if st.button("🔄 Reset Progress", key="reset_progress", help="Reset all progress data"):
-                    reset_dialog()
-            with col3:
-                if st.button("📥 Export Firestore Data", key="export_firestore", help="Export Firestore data as CSV"):
-                    export_supabase_data()
+        st.subheader("👤 User Preferences")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.session_state.user_email = st.text_input("📧 Email", value=st.session_state.user_email, disabled=True)
+            st.session_state.dark_mode = st.checkbox("🌙 Dark Mode", value=st.session_state.dark_mode, help="Toggle dark mode (coming soon)")
+        
+        with col2:
+            st.session_state.notifications_enabled = st.checkbox("🔔 Enable Notifications", value=st.session_state.notifications_enabled, help="Receive progress notifications")
+            notification_frequency = st.selectbox("📅 Notification Frequency", ["Daily", "Weekly", "Monthly"], help="Choose how often to receive notifications")
+        
+        st.subheader("💾 Data Management")
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            if st.button("📤 Export Progress"):
+                export_progress_data()
+        
+        with col2:
+            if st.button("🔄 Reset Progress"):
+                reset_dialog()
+        
+        with col3:
+            if st.button("📥 Export Firestore Data"):
+                export_supabase_data()
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
 def export_progress_data():
     if not st.session_state.authenticated:
         st.warning("Please sign in to export progress.")
         return
+    
     progress_df = pd.DataFrame([
         {
             'Item': key,
@@ -961,19 +1049,20 @@ def export_progress_data():
         }
         for key, value in st.session_state.progress_data.items()
     ])
+    
     csv = progress_df.to_csv(index=False)
     st.download_button(
         label="📥 Download Progress CSV",
         data=csv,
         file_name="study_progress.csv",
-        mime="text/csv",
-        key="download_study_progress"
+        mime="text/csv"
     )
 
 def reset_progress_data():
     if not st.session_state.authenticated:
         st.warning("Please sign in to reset progress.")
         return
+    
     st.session_state.progress_data = {}
     st.session_state.study_hours = 0
     st.session_state.streak_counter = 0
@@ -1028,31 +1117,36 @@ def download_curriculum_from_firestore(user_id):
 
 def main():
     st.sidebar.title("📚 Navigation")
+    
     if st.session_state.authenticated:
         page = st.sidebar.radio(
             "Choose Page",
             ["📊 Dashboard", "📋 Checklist", "🏆 Trophy Case", "📅 Schedule", "⚙️ Settings"],
-            key="nav_radio"
+            label_visibility="collapsed"
         )
     else:
         page = "⚙️ Settings"
+    
     if st.session_state.authenticated and st.session_state.curriculum_data:
         completion_percentage, completed_subtopics, total_subtopics, total_modules = calculate_progress_stats(
             st.session_state.progress_data, st.session_state.curriculum_data
         )
-        st.sidebar.markdown("### Progress Overview")
-        st.sidebar.metric("Progress", f"{completion_percentage:.1f}%")
-        st.sidebar.metric("Completed", f"{completed_subtopics}/{total_subtopics}")
-        st.sidebar.metric("Study Hours", st.session_state.study_hours)
-        st.sidebar.metric("Streak", f"{st.session_state.streak_counter} days")
-    st.sidebar.markdown("### Actions")
+        
+        st.sidebar.markdown("---")
+        st.sidebar.metric("Progress", f"{completion_percentage:.1f}%", help="Your overall completion percentage")
+        st.sidebar.metric("Completed", f"{completed_subtopics}/{total_subtopics}", help="Subtopics completed vs total")
+        st.sidebar.metric("Study Hours", st.session_state.study_hours, help="Total hours logged")
+        st.sidebar.metric("Streak", f"{st.session_state.streak_counter} days", help="Consecutive study days")
+    
     if st.session_state.authenticated:
-        if st.sidebar.button("➕ Log Study Session", key="log_session", help="Log a new study session"):
+        st.sidebar.markdown("---")
+        if st.sidebar.button("➕ Log Study Session", help="Log a new study session"):
             st.session_state.study_hours += 1
             st.session_state.streak_counter += 1
             st.session_state.last_study_date = datetime.now().date()
             save_study_session_to_supabase(st.session_state.user_id, 1)
             st.sidebar.success("Study session logged!")
+    
     if page == "📊 Dashboard":
         render_progress_dashboard()
     elif page == "📋 Checklist":
