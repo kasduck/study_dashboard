@@ -47,62 +47,71 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Enhanced CSS with modern, clean, and animated design
+# Enhanced CSS with improved readability, gradients, and animations
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
     body {
-        font-family: 'Inter', sans-serif;
-        background-color: #f5f7fa;
+        font-family: 'Roboto', sans-serif;
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        color: #1e293b;
     }
 
     .sidebar .sidebar-content {
-        background-color: #ffffff;
-        border-right: 1px solid #e0e4e8;
-        padding: 1rem;
+        background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+        border-right: 1px solid #cbd5e1;
+        padding: 1.5rem;
+        border-radius: 0 10px 10px 0;
     }
 
     .main-container {
-        background-color: #ffffff;
-        border-radius: 12px;
-        padding: 2rem;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        margin: 1rem;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border-radius: 16px;
+        padding: 2.5rem;
+        margin: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .main-container:hover {
+        transform: translateY(-3px);
     }
 
     .main-header {
-        background: linear-gradient(135deg, #4a90e2 0%, #9013fe 100%);
-        color: white;
-        padding: 2rem;
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        color: #ffffff;
+        padding: 2.5rem;
         border-radius: 12px;
         margin-bottom: 2rem;
         text-align: center;
-        animation: fadeIn 0.5s ease-in;
+        font-size: 2rem;
+        font-weight: 500;
+        animation: fadeIn 0.7s ease-in;
     }
 
     .stats-card {
-        background: #ffffff;
+        background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
         border-radius: 12px;
-        padding: 1.5rem;
-        margin: 0.5rem;
+        padding: 2rem;
+        margin: 0.75rem;
         text-align: center;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .stats-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
     }
 
     .progress-card {
-        background: linear-gradient(135deg, #36d1dc 0%, #5b86e5 100%);
-        color: white;
-        padding: 1.5rem;
+        background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);
+        color: #ffffff;
+        padding: 2rem;
         border-radius: 12px;
-        margin: 0.5rem;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        margin: 0.75rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         transition: transform 0.3s ease;
     }
 
@@ -111,71 +120,72 @@ st.markdown("""
     }
 
     .badge-card {
-        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-        color: white;
-        padding: 1rem;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff;
+        padding: 1.5rem;
         border-radius: 12px;
-        margin: 0.5rem;
+        margin: 0.75rem;
         text-align: center;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         transition: transform 0.3s ease;
     }
 
     .badge-card:hover {
-        transform: scale(1.05);
+        transform: scale(1.1);
     }
 
     .locked-item {
-        opacity: 0.7;
-        background-color: #f1f3f5;
-        border-radius: 8px;
-        padding: 0.5rem;
-        color: #333;
+        background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+        border-radius: 10px;
+        padding: 0.75rem;
+        color: #4b5563;
+        opacity: 0.8;
     }
 
     .completed-item {
-        background-color: #e6f4ea;
-        border-left: 4px solid #28a745;
-        border-radius: 8px;
-        padding: 0.5rem;
-        color: #333;
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        border-left: 4px solid #10b981;
+        border-radius: 10px;
+        padding: 0.75rem;
+        color: #1e293b;
         animation: slideIn 0.5s ease;
     }
 
     .next-item {
-        background-color: #fff4d6;
-        border-left: 4px solid #ffca28;
-        border-radius: 8px;
-        padding: 0.5rem;
-        color: #333;
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border-left: 4px solid #f59e0b;
+        border-radius: 10px;
+        padding: 0.75rem;
+        color: #1e293b;
         animation: pulse 2s infinite;
     }
 
     @keyframes pulse {
         0% { transform: scale(1); }
-        50% { transform: scale(1.02); }
+        50% { transform: scale(1.03); }
         100% { transform: scale(1); }
     }
 
     @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes slideIn {
-        from { transform: translateX(-20px); opacity: 0; }
+        from { transform: translateX(-30px); opacity: 0; }
         to { transform: translateX(0); opacity: 1; }
     }
 
     .motivational-quote {
-        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-        color: white;
-        padding: 1.5rem;
+        background: linear-gradient(135deg, #475569 0%, #1e293b 100%);
+        color: #ffffff;
+        padding: 2rem;
         border-radius: 12px;
         text-align: center;
         font-style: italic;
-        margin: 1rem 0;
-        animation: fadeIn 0.5s ease-in;
+        font-weight: 300;
+        margin: 1.5rem 0;
+        animation: fadeIn 0.7s ease-in;
     }
 
     .tooltip {
@@ -186,96 +196,108 @@ st.markdown("""
 
     .tooltip .tooltiptext {
         visibility: hidden;
-        width: 120px;
-        background-color: #333;
-        color: #fff;
+        width: 140px;
+        background: #1e293b;
+        color: #ffffff;
         text-align: center;
-        border-radius: 6px;
-        padding: 5px;
+        border-radius: 8px;
+        padding: 8px;
         position: absolute;
         z-index: 1;
-        bottom: 125%;
+        bottom: 130%;
         left: 50%;
-        margin-left: -60px;
+        margin-left: -70px;
         opacity: 0;
-        transition: opacity 0.3s;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        transform: translateY(10px);
     }
 
     .tooltip:hover .tooltiptext {
         visibility: visible;
         opacity: 1;
+        transform: translateY(0);
     }
 
     .message-box {
-        padding: 0.5rem;
-        margin-top: 0.5rem;
-        border-radius: 8px;
+        padding: 0.75rem;
+        margin-top: 0.75rem;
+        border-radius: 10px;
         text-align: center;
-        background-color: #e6f4ea;
-        color: #333;
-        border: 2px solid #28a745;
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        color: #1e293b;
+        border: 2px solid #10b981;
         animation: slideIn 0.5s ease;
     }
 
     .message-box.warning {
-        background-color: #fff4d6;
-        border: 2px solid #ffca28;
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border: 2px solid #f59e0b;
     }
 
     .completion-message {
-        color: #333;
-        font-size: 1rem;
-        margin: 0.5rem 0;
+        color: #1e293b;
+        font-size: 1.1rem;
+        margin: 0.75rem 0;
         background: none;
         border: none;
         padding: 0;
-        animation: fadeIn 0.5s ease;
+        animation: fadeIn 0.7s ease;
     }
 
     .stButton>button {
-        background: linear-gradient(135deg, #4a90e2 0%, #9013fe 100%);
-        color: white;
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        color: #ffffff;
         border: none;
-        border-radius: 8px;
-        padding: 0.5rem 1rem;
-        transition: background 0.3s ease, transform 0.2s ease;
+        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
     }
 
     .stButton>button:hover {
-        background: linear-gradient(135deg, #357abd 0%, #7b0fd9 100%);
-        transform: translateY(-2px);
+        background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
 
     .stTextInput>div>input, .stTimeInput>div>input, .stSelectbox>div>select, .stMultiselect>div>select {
-        border-radius: 8px;
-        border: 1px solid #e0e4e8;
-        padding: 0.5rem;
-        transition: border-color 0.3s ease;
+        border-radius: 10px;
+        border: 1px solid #cbd5e1;
+        padding: 0.75rem;
+        background: #ffffff;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
     .stTextInput>div>input:focus, .stTimeInput>div>input:focus, .stSelectbox>div>select:focus, .stMultiselect>div>select:focus {
-        border-color: #4a90e2;
-        box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
     }
 
     .stExpander {
-        border: 1px solid #e0e4e8;
-        border-radius: 8px;
-        margin-bottom: 1rem;
-        background-color: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        transition: all 0.3s ease;
     }
 
     .stPlotlyChart {
-        background-color: #ffffff;
-        border-radius: 8px;
-        padding: 1rem;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .stPlotlyChart:hover {
+        transform: translateY(-3px);
     }
 
     .stDataFrame {
-        border-radius: 8px;
+        border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        background: #ffffff;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -588,12 +610,23 @@ def render_progress_dashboard():
             values=module_completion,
             names=module_names,
             title="Module Completion Distribution",
-            color_discrete_sequence=px.colors.qualitative.Pastel
+            color_discrete_sequence=px.colors.qualitative.Set2,
+            hover_data={'values': module_completion},
+        )
+        fig_pie.update_traces(
+            textposition='inside',
+            textinfo='percent+label',
+            hovertemplate='<b>%{label}</b><br>Completion: %{value:.1f}%<extra></extra>',
+            pull=[0.05] * len(module_names),
+            marker=dict(line=dict(color='#ffffff', width=2))
         )
         fig_pie.update_layout(
-            margin=dict(t=40, b=40, l=40, r=40),
+            margin=dict(t=50, b=50, l=50, r=50),
             paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)'
+            plot_bgcolor='rgba(0,0,0,0)',
+            showlegend=True,
+            font=dict(size=14, family='Roboto', color='#1e293b'),
+            hoverlabel=dict(bgcolor='#ffffff', font_size=12, font_family='Roboto')
         )
         st.plotly_chart(fig_pie, use_container_width=True)
     
@@ -606,12 +639,24 @@ def render_progress_dashboard():
             y=hours,
             title="Weekly Study Hours",
             color=hours,
-            color_continuous_scale="Teal"
+            color_continuous_scale="Viridis",
+            text=hours,
+        )
+        fig_bar.update_traces(
+            textposition='outside',
+            hovertemplate='<b>%{x}</b><br>Hours: %{y}<extra></extra>',
+            marker=dict(line=dict(color='#ffffff', width=2)),
+            selector=dict(type='bar')
         )
         fig_bar.update_layout(
-            margin=dict(t=40, b=40, l=40, r=40),
+            margin=dict(t=50, b=50, l=50, r=50),
             paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)'
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(size=14, family='Roboto', color='#1e293b'),
+            hoverlabel=dict(bgcolor='#ffffff', font_size=12, font_family='Roboto'),
+            xaxis_title="Week",
+            yaxis_title="Hours",
+            showlegend=False
         )
         st.plotly_chart(fig_bar, use_container_width=True)
     
@@ -636,9 +681,11 @@ def render_progress_dashboard():
                 go.Bar(
                     x=modules,
                     y=counts,
-                    marker_color='#36d1dc',
+                    marker_color='#22d3ee',
                     text=counts,
-                    textposition='auto'
+                    textposition='outside',
+                    hovertemplate='<b>%{x}</b><br>Completed: %{y}<extra></extra>',
+                    marker=dict(line=dict(color='#ffffff', width=2))
                 )
             ])
             fig_subtopics.update_layout(
@@ -646,7 +693,9 @@ def render_progress_dashboard():
                 xaxis_title="Module",
                 yaxis_title="Completed Subtopics",
                 template="plotly_white",
-                margin=dict(t=40, b=40, l=40, r=40)
+                margin=dict(t=50, b=50, l=50, r=50),
+                font=dict(size=14, family='Roboto', color='#1e293b'),
+                hoverlabel=dict(bgcolor='#ffffff', font_size=12, font_family='Roboto')
             )
             st.plotly_chart(fig_subtopics, use_container_width=True)
         else:
@@ -860,14 +909,30 @@ def render_study_schedule():
         target_hours = 25
         fig_goal = go.Figure(data=[go.Indicator(
             value=weekly_hours,
-            mode="gauge+number",
+            mode="gauge+number+delta",
             title={'text': "Weekly Hours Progress"},
-            gauge={'axis': {'range': [0, 30]}, 'bar': {'color': "#36d1dc"}}
+            delta={'reference': target_hours},
+            gauge={
+                'axis': {'range': [0, 30]},
+                'bar': {'color': "#22d3ee"},
+                'steps': [
+                    {'range': [0, 15], 'color': "#fef3c7"},
+                    {'range': [15, 25], 'color': "#a7f3d0"},
+                    {'range': [25, 30], 'color': "#6ee7b7"}
+                ],
+                'threshold': {
+                    'line': {'color': "#1e293b", 'width': 4},
+                    'thickness': 0.75,
+                    'value': target_hours
+                }
+            }
         )])
         fig_goal.update_layout(
-            margin=dict(t=40, b=40, l=40, r=40),
+            margin=dict(t=50, b=50, l=50, r=50),
             paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)'
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(size=14, family='Roboto', color='#1e293b'),
+            hoverlabel=dict(bgcolor='#ffffff', font_size=12, font_family='Roboto')
         )
         st.plotly_chart(fig_goal, use_container_width=True)
         
