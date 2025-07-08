@@ -59,14 +59,15 @@ st.markdown("""
     }
 
     .sidebar .sidebar-content {
-        background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
-        border-right: 1px solid #cbd5e1;
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        border-right: none;
         padding: 1.5rem;
         border-radius: 0 10px 10px 0;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
 
     .main-container {
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
         border-radius: 16px;
         padding: 2.5rem;
         margin: 1.5rem;
@@ -91,7 +92,7 @@ st.markdown("""
     }
 
     .stats-card {
-        background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+        background: linear-gradient(135deg, #e2e8f0 0%, #d1d5db 100%);
         border-radius: 12px;
         padding: 2rem;
         margin: 0.75rem;
@@ -135,7 +136,7 @@ st.markdown("""
     }
 
     .locked-item {
-        background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+        background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
         border-radius: 10px;
         padding: 0.75rem;
         color: #4b5563;
@@ -264,7 +265,7 @@ st.markdown("""
         border-radius: 10px;
         border: 1px solid #cbd5e1;
         padding: 0.75rem;
-        background: #ffffff;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
         transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
@@ -277,12 +278,16 @@ st.markdown("""
         border: 1px solid #cbd5e1;
         border-radius: 10px;
         margin-bottom: 1.5rem;
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
         transition: all 0.3s ease;
     }
 
+    .stExpander > div > div {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+    }
+
     .stPlotlyChart {
-        background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
         border-radius: 12px;
         padding: 1.5rem;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -297,13 +302,21 @@ st.markdown("""
         border-radius: 12px;
         overflow: hidden;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        background: #ffffff;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    }
+
+    .stMetric {
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 </style>
 """, unsafe_allow_html=True)
 
 # Initialize session state
-if 'initialized' not in st.session_state:
+if 'initialized' not in=st.session_state:
     st.session_state.initialized = True
     st.session_state.curriculum_data = None
     st.session_state.curriculum_file = None
@@ -784,6 +797,7 @@ def render_curriculum_checklist():
                             if is_completed:
                                 st.markdown("✅")
                             elif is_unlocked:
+環
                                 st.markdown("⏳")
                             else:
                                 st.markdown('<div class="tooltip">🔒<span class="tooltiptext">Locked</span></div>', unsafe_allow_html=True)
@@ -890,7 +904,7 @@ def render_study_schedule():
         start_time = st.time_input("Preferred Start Time", value=datetime.strptime("09:00", "%H:%M").time(), help="Choose when to start studying.")
     
     with col2:
-        study_days = st.multiselect(
+        study_days = st.mult.select(
             "Available Days",
             ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
             default=["Monday", "Saturday", "Sunday"],
@@ -1074,7 +1088,7 @@ def render_settings():
     
     if st.session_state.authenticated:
         st.subheader("👤 User Preferences")
-        col1, col2 = st.columns(2)
+        col col1, col2 = st.columns(2)
         
         with col1:
             st.session_state.user_email = st.text_input("📧 Email", value=st.session_state.user_email, disabled=True)
