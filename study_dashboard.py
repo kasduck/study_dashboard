@@ -54,20 +54,21 @@ st.markdown("""
 
     body {
         font-family: 'Roboto', sans-serif;
-        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-        color: #1e293b;
+        background: linear-gradient(135deg, #f0f4f2 0%, #d4e4e8 100%); /* Soft off-white to pale blue */
+        color: #2d3748; /* Dark slate gray for text */
     }
 
     .sidebar .sidebar-content {
-        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        background: linear-gradient(135deg, #e6ecea 0%, #a8b7b0 100%); /* Light sage to soft gray */
         border-right: none;
         padding: 1.5rem;
         border-radius: 0 10px 10px 0;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        color: #2d3748;
     }
 
     .main-container {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        background: linear-gradient(135deg, #f0f4f2 0%, #e6ecea 100%); /* Off-white to sage */
         border-radius: 16px;
         padding: 2.5rem;
         margin: 1.5rem;
@@ -80,8 +81,8 @@ st.markdown("""
     }
 
     .main-header {
-        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-        color: #ffffff;
+        background: linear-gradient(135deg, #4fb3bf 0%, #7e57c2 100%); /* Teal to soft purple */
+        color: #ffffff; /* White text */
         padding: 2.5rem;
         border-radius: 12px;
         margin-bottom: 2rem;
@@ -92,13 +93,14 @@ st.markdown("""
     }
 
     .stats-card {
-        background: linear-gradient(135deg, #e2e8f0 0%, #d1d5db 100%);
+        background: linear-gradient(135deg, #e6ecea 0%, #d1dad7 100%); /* Sage to soft gray */
         border-radius: 12px;
         padding: 2rem;
         margin: 0.75rem;
         text-align: center;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        color: #2d3748; /* Dark slate gray text */
     }
 
     .stats-card:hover {
@@ -107,8 +109,8 @@ st.markdown("""
     }
 
     .progress-card {
-        background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);
-        color: #ffffff;
+        background: linear-gradient(135deg, #26a69a 0%, #4fb3bf 100%); /* Teal to light teal */
+        color: #ffffff; /* White text */
         padding: 2rem;
         border-radius: 12px;
         margin: 0.75rem;
@@ -121,8 +123,8 @@ st.markdown("""
     }
 
     .badge-card {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        color: #ffffff;
+        background: linear-gradient(135deg, #66bb6a 0%, #388e3c 100%); /* Light green to forest green */
+        color: #ffffff; /* White text */
         padding: 1.5rem;
         border-radius: 12px;
         margin: 0.75rem;
@@ -136,28 +138,28 @@ st.markdown("""
     }
 
     .locked-item {
-        background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
+        background: linear-gradient(135deg, #d1dad7 0%, #b0bec5 100%); /* Soft gray to blue-gray */
         border-radius: 10px;
         padding: 0.75rem;
-        color: #4b5563;
+        color: #4a5568; /* Medium gray text */
         opacity: 0.8;
     }
 
     .completed-item {
-        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-        border-left: 4px solid #10b981;
+        background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%); /* Light green to medium green */
+        border-left: 4px solid #388e3c; /* Forest green border */
         border-radius: 10px;
         padding: 0.75rem;
-        color: #1e293b;
+        color: #2d3748; /* Dark slate gray text */
         animation: slideIn 0.5s ease;
     }
 
     .next-item {
-        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-        border-left: 4px solid #f59e0b;
+        background: linear-gradient(135deg, #ffccbc 0%, #ffab91 100%); /* Light coral to soft coral */
+        border-left: 4px solid #f4511e; /* Deep coral border */
         border-radius: 10px;
         padding: 0.75rem;
-        color: #1e293b;
+        color: #2d3748; /* Dark slate gray text */
         animation: pulse 2s infinite;
     }
 
@@ -178,8 +180,8 @@ st.markdown("""
     }
 
     .motivational-quote {
-        background: linear-gradient(135deg, #475569 0%, #1e293b 100%);
-        color: #ffffff;
+        background: linear-gradient(135deg, #455a64 0%, #263238 100%); /* Dark slate to deep gray */
+        color: #e0f7fa; /* Light cyan text */
         padding: 2rem;
         border-radius: 12px;
         text-align: center;
@@ -198,8 +200,8 @@ st.markdown("""
     .tooltip .tooltiptext {
         visibility: hidden;
         width: 140px;
-        background: #1e293b;
-        color: #ffffff;
+        background: #263238; /* Deep gray background */
+        color: #e0f7fa; /* Light cyan text */
         text-align: center;
         border-radius: 8px;
         padding: 8px;
@@ -224,19 +226,20 @@ st.markdown("""
         margin-top: 0.75rem;
         border-radius: 10px;
         text-align: center;
-        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-        color: #1e293b;
-        border: 2px solid #10b981;
+        background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%); /* Light green to medium green */
+        color: #2d3748; /* Dark slate gray text */
+        border: 2px solid #388e3c; /* Forest green border */
         animation: slideIn 0.5s ease;
     }
 
     .message-box.warning {
-        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-        border: 2px solid #f59e0b;
+        background: linear-gradient(135deg, #ffccbc 0%, #ffab91 100%); /* Light coral to soft coral */
+        border: 2px solid #f4511e; /* Deep coral border */
+        color: #2d3748; /* Dark slate gray text */
     }
 
     .completion-message {
-        color: #1e293b;
+        color: #2d3748; /* Dark slate gray text */
         font-size: 1.1rem;
         margin: 0.75rem 0;
         background: none;
@@ -246,8 +249,8 @@ st.markdown("""
     }
 
     .stButton>button {
-        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-        color: #ffffff;
+        background: linear-gradient(135deg, #4fb3bf 0%, #26a69a 100%); /* Teal to deep teal */
+        color: #ffffff; /* White text */
         border: none;
         border-radius: 10px;
         padding: 0.75rem 1.5rem;
@@ -256,38 +259,40 @@ st.markdown("""
     }
 
     .stButton>button:hover {
-        background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+        background: linear-gradient(135deg, #26a69a 0%, #00897b 100%); /* Deep teal to darker teal */
         transform: translateY(-3px);
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
 
     .stTextInput>div>input, .stTimeInput>div>input, .stSelectbox>div>select, .stMultiselect>div>select {
         border-radius: 10px;
-        border: 1px solid #cbd5e1;
+        border: 1px solid #b0bec5; /* Blue-gray border */
         padding: 0.75rem;
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        background: linear-gradient(135deg, #f0f4f2 0%, #e6ecea 100%); /* Off-white to sage */
         transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        color: #2d3748; /* Dark slate gray text */
     }
 
     .stTextInput>div>input:focus, .stTimeInput>div>input:focus, .stSelectbox>div>select:focus, .stMultiselect>div>select:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        border-color: #4fb3bf; /* Teal border */
+        box-shadow: 0 0 0 3px rgba(79, 179, 191, 0.2); /* Teal glow */
     }
 
     .stExpander {
-        border: 1px solid #cbd5e1;
+        border: 1px solid #b0bec5; /* Blue-gray border */
         border-radius: 10px;
         margin-bottom: 1.5rem;
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        background: linear-gradient(135deg, #f0f4f2 0%, #e6ecea 100%); /* Off-white to sage */
         transition: all 0.3s ease;
+        color: #2d3748; /* Dark slate gray text */
     }
 
     .stExpander > div > div {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+        background: linear-gradient(135deg, #f0f4f2 0%, #e6ecea 100%) !important; /* Off-white to sage */
     }
 
     .stPlotlyChart {
-        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        background: linear-gradient(135deg, #e6ecea 0%, #d1dad7 100%); /* Sage to soft gray */
         border-radius: 12px;
         padding: 1.5rem;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -302,15 +307,16 @@ st.markdown("""
         border-radius: 12px;
         overflow: hidden;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        background: linear-gradient(135deg, #f0f4f2 0%, #e6ecea 100%); /* Off-white to sage */
     }
 
     .stMetric {
-        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        background: linear-gradient(135deg, #e6ecea 0%, #d1dad7 100%); /* Sage to soft gray */
         border-radius: 10px;
         padding: 1rem;
         margin-bottom: 1rem;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        color: #2d3748; /* Dark slate gray text */
     }
 </style>
 """, unsafe_allow_html=True)
